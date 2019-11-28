@@ -3,8 +3,7 @@
 
 A platform where all the actions related to the health center are performed. For that, a person has to log in on the platform by his personal username and password. The credentials are verified by the admin. Once the credentials are verified, the user is classified into the following  categories : (1) Admin (2) Patient (3) Receptionist (4) Doctor (5) Pharmacist 
 
-## Admin :
-	 The admin registers the new students every year and provides and keeps track of the login credentials. The activities of the platform are maintained by the admin. Admin notifies the professors for the leave application of the patient if the patient needs it.
+
 
 
 ##Patient : 
@@ -21,5 +20,9 @@ A platform where all the actions related to the health center are performed. For
 
 ##Pharmacist : 
 	After getting login credentials verified, the pharmacist gives medicine and does the dressing and other necessities as prescribed by the doctor. The pharmacist maintains the record of the inventory of the medicines and updates the pharmacy if there is any shortage of medicines.
+
+
+##Admin :
+	The admin registers the new students every year and provides and keeps track of the login credentials. The activities of the platform are maintained by the admin. Admin notifies the professors for the leave application of the patient if the patient needs it.
 
 There will be an online discussion forum in which patients can discuss their symptoms and find a cure for it. 
