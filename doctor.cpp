@@ -1,12 +1,29 @@
 #include <bits/stdc++.h>
+#include <string>
 #include "admin/classes/Dclass.cpp"
-
+string to_string(int x){
+	char* ret=new char[4];
+	ret[0]=' ';
+	ret[1]=x/10+'0';
+	ret[2]=x%10+'0';
+	ret[3]='\0';
+	return (string)ret;
+}
+string to_strng(int x){
+	char* ret=new char[3];
+	ret[0]=x/10+'0';
+	ret[1]=x%10+'0';
+	ret[2]='\0';
+	return (string)ret;
+}
 void displayMedicalRecord(patient* p){
-	cout<<"Patient Records"<<endl;
-	cout<<p->record;
+	cout<<"Receptionist Remarks: ";
+	cout<<p->rRemarks;
 	cout<<endl;
-	cout<<"Receptionist Remarks"<<endl;
+	cout<<"Temperature: ";
 	cout<<p->temp<<endl;
+	cout<<"Weight: ";
+	cout<<p->weight<<endl;
 	//cout<<p->rRemarks;
 	cout<<endl;
 }
@@ -24,6 +41,9 @@ void notifyAdmin(int pldap){
 	cout<<"Enter Ending Date followed by Ending Month"<<endl;
 	cin>>s.endDate>>s.endMonth;
 	fout.write(reinterpret_cast<char*>(&s), sizeof(leave));
+	string send=(string)"notifyAdmin.py P"+to_strng(pldap)+to_string(s.startingDate)+to_string(s.startingMonth)+to_string(s.endDate)+to_string(s.endMonth);
+	cout<<endl;
+	system(send.c_str());
 	fout.close();
 
 	//ifstream fin;
@@ -51,7 +71,18 @@ patient* nextPatient(doctor* d,patient*p){
 		cout<<endl;
 }
 
-void treatPatients(doctor* d){
+void treatPatients(int num,doctor* d){
+	ifstream fin;
+	fin.open("admin/records/doctors.txt");
+	for (int i = 0; i < 10; ++i){
+		fin.read(reinterpret_cast<char*>(d), sizeof(doctor));
+		if(d->LDAP==num)
+			break;
+	}
+	fin.close();
+
+
+
 	patient* p=new patient();
 	p=nextPatient(d,p);
 	if(p==NULL){
@@ -66,21 +97,38 @@ void treatPatients(doctor* d){
 	cin>>leave;
 	if(leave)
 		notifyAdmin(p->LDAP);
-		d->updateRecords(p);
-		return;
+	updateRecords(p);
+	return;
 }
+
+void updateRecords(patient* p){
+	ifstream fin;
+	ofstream fout;
+	patient* p1=new patient();
+	fin.open("admin/records/records.txt");
+	fout.open("admin/records/tempFiles/tempRecords.txt");
+	while(fin.read(reinterpret_cast<char*>(p1), sizeof(patient)))
+		if(p1->LDAP==p->LDAP)
+			fout.write(reinterpret_cast<char*>(p), sizeof(patient));
+		else
+			fout.write(reinterpret_cast<char*>(p1), sizeof(patient));
+	fin.close();fout.close();
+	patient* p2=new patient();
+	fin.open("admin/records/tempFiles/tempRecords.txt");
+	fout.open("admin/records/records.txt");
+	while(fin.read(reinterpret_cast<char*>(p2), sizeof(patient)))
+		fout.write(reinterpret_cast<char*>(p2), sizeof(patient));
+	fin.close();fout.close();
+	cout<<"Records Updated"<<endl;
+	return;				
+	}
+
+
 
 void doctorInit(int num,doctor* d){
 	ifstream fin;
 	ofstream fout;
 	while(true){	
-	fin.open("admin/records/doctors.txt");
-	for (int i = 0; i < 10; ++i){
-		fin.read(reinterpret_cast<char*>(d), sizeof(doctor));
-		if(d->LDAP==num)
-			break;
-	}
-	fin.close();
 	char x;
 	cout<<"Press 1 to Treat patients"<<endl;
 	cout<<"Press 2 for online discussion"<<endl;
@@ -88,7 +136,7 @@ void doctorInit(int num,doctor* d){
 	cin>>x;
 	int cmd=x-'0';
 	switch(cmd){
-		case 1:{treatPatients(d);/*pushQ();*/break;}
+		case 1:{treatPatients(num,d);/*pushQ();*/break;}
 		case 2:{d->onlineDiscussion(num);break;}
 		case 3:{cout<<"Logged Out"<<endl;return;}
 		default: cout<<"Invalid Value"<<endl;
